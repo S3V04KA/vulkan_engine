@@ -1,0 +1,1 @@
+. "/Users/a123/Documents/projects/hex/test_package/deactivate_conanbuildenv-debug-x86_64.sh"
