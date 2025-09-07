@@ -26,7 +26,7 @@ namespace hex
 
             float aspect = renderer.getAspectRatio();
             // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
-            camera.setPerspectiveProjection(glm::radians(60.f), aspect, 0.1f, 10.0f);
+            camera.setPerspectiveProjection(glm::radians(60.f), aspect, 0.1f, 100.0f);
 
             if (auto commandBuffer = renderer.beginFrame())
             {
