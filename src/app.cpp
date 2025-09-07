@@ -25,7 +25,7 @@ namespace hex
         Camera camera{};
 
         auto viewerObject = GameObject::createGameObject();
-        MovementController cameraController{};
+        MovementController cameraController{window.getGLFWwindow(), viewerObject};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -38,8 +38,8 @@ namespace hex
             currentTime = newTime;
             frameTime = glm::min(frameTime, MAX_FRAME_TIME);
 
-            cameraController.moveInPlaneXZ(window.getGLFWwindow(), frameTime, viewerObject);
-            cameraController.rotateInPlaneXZ(window.getGLFWwindow(), frameTime, viewerObject);
+            cameraController.moveInPlaneXZ(frameTime);
+            cameraController.lookAround(frameTime);
             camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
             float aspect = renderer.getAspectRatio();

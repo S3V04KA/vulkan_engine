@@ -23,12 +23,22 @@ namespace hex
             int lookDown = GLFW_KEY_DOWN;
         };
 
-        void moveInPlaneXZ(GLFWwindow *window, float dt, GameObject &gameObject);
-        void rotateInPlaneXZ(GLFWwindow *window, float dt, GameObject &gameObject);
+        MovementController(GLFWwindow *window, GameObject &gameObject, float moveSpeed = 3.0f, float lookSpeed = 1.5f, float sensitivity = 2.0f) : window(window), gameObject(gameObject), moveSpeed(moveSpeed), lookSpeed(lookSpeed), sensitivity(sensitivity) {};
+        ~MovementController() = default;
 
+        MovementController(const MovementController &) = delete;
+        MovementController &operator=(const MovementController &) = delete;
+
+        void moveInPlaneXZ(float dt);
+        void lookAround(float dt);
+
+    private:
+        GLFWwindow *window;
+        GameObject &gameObject;
         KeyMappings keys{};
-        float moveSpeed{3.0f};
-        float lookSpeed{1.5f};
-        float sensitivity{3.0f};
+        float moveSpeed;
+        float lookSpeed;
+        float sensitivity;
+        bool firstLoad = true;
     };
 }

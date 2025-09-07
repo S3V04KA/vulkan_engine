@@ -2,7 +2,7 @@
 
 namespace hex
 {
-    void MovementController::moveInPlaneXZ(GLFWwindow *window, float dt, GameObject &gameObject)
+    void MovementController::moveInPlaneXZ(float dt)
     {
         glm::vec3 rotate{0};
         if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS)
@@ -43,21 +43,25 @@ namespace hex
             gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);
     }
 
-    void MovementController::rotateInPlaneXZ(GLFWwindow *window, float dt, GameObject &gameObject)
+    void MovementController::lookAround(float dt)
     {
-        glm::vec3 rotate{0};
+        if (firstLoad)
+        {
+            glfwSetCursorPos(window, 0.0, 0.0);
+            firstLoad = false;
+        }
+
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
+        glfwSetCursorPos(window, 0.0, 0.0);
 
-        rotate.x -= ypos;
-        rotate.y += xpos;
-
-        if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon())
-            gameObject.transform.rotation += sensitivity * dt * glm::normalize(rotate);
+        if (xpos != 0.0 || ypos != 0.0)
+        {
+            gameObject.transform.rotation.y += sensitivity * 0.1f * static_cast<float>(xpos) * dt;
+            gameObject.transform.rotation.x -= sensitivity * 0.1f * static_cast<float>(ypos) * dt;
+        }
 
         gameObject.transform.rotation.x = glm::clamp(gameObject.transform.rotation.x, -1.5f, 1.5f);
         gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
-
-        glfwSetCursorPos(window, 0.0f, 0.0f);
     }
 }
