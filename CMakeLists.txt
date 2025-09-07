@@ -8,6 +8,9 @@ endif()
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
+add_library(tinyobjloader INTERFACE)
+target_include_directories(tinyobjloader INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libs/tinyobjloader)
+
 find_program(GLSLC_EXECUTABLE glslc HINTS "$ENV{VULKAN_SDK}/bin")
 
 if(NOT GLSLC_EXECUTABLE)
@@ -40,13 +43,37 @@ endforeach()
 
 add_custom_target(Shaders ALL DEPENDS ${SPIRV_BINARY_FILES})
 
+file(GLOB MODELS
+    "${CMAKE_CURRENT_SOURCE_DIR}/models/*.obj"
+)
+
+set(MODELS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/models)
+
+foreach(MODEL ${MODELS})
+    get_filename_component(FILE_NAME ${MODEL} NAME)
+    set(MODEL_OUTPUT ${MODELS_OUT_DIR}/${FILE_NAME})
+
+    add_custom_command(
+        OUTPUT ${MODEL_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${MODELS_OUT_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy ${MODEL} ${MODEL_OUTPUT}
+        DEPENDS ${MODEL}
+        COMMENT "Coping model ${FILE_NAME}"
+        VERBATIM
+    )
+
+    list(APPEND MODELS_DIR ${MODEL_OUTPUT})
+endforeach()
+
+add_custom_target(Models ALL DEPENDS ${MODELS_DIR})
+
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm)
-add_dependencies(${PROJECT_NAME} Shaders)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm tinyobjloader)
+add_dependencies(${PROJECT_NAME} Shaders Models)
 
 if (NOT ANDROID)
     target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
