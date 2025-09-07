@@ -18,6 +18,7 @@ namespace hex
 
         bool wasWindowResized() { return framebufferResized; };
         void resetWindowResizedFlag() { framebufferResized = false; };
+        GLFWwindow *getGLFWwindow() { return window; };
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 

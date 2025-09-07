@@ -60,9 +60,6 @@ namespace hex
 
         for (auto &gameObject : gameObjects)
         {
-            gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y + 0.01f, glm::two_pi<float>());
-            gameObject.transform.rotation.x = glm::mod(gameObject.transform.rotation.x + 0.005f, glm::two_pi<float>());
-
             SimplePushConstantData pushData{};
             pushData.color = gameObject.color;
             pushData.transform = projectionView * gameObject.transform.mat4();

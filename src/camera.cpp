@@ -23,7 +23,7 @@ namespace hex
         const float tanHalfFovy = tan(fovy / 2.f);
         projectionMatrix = glm::mat4{0.0f};
         projectionMatrix[0][0] = 1.f / (aspect * tanHalfFovy);
-        projectionMatrix[1][1] = 1.f / (tanHalfFovy);
+        projectionMatrix[1][1] = -1.f / (tanHalfFovy);
         projectionMatrix[2][2] = far / (far - near);
         projectionMatrix[2][3] = 1.f;
         projectionMatrix[3][2] = -(far * near) / (far - near);
@@ -59,8 +59,8 @@ namespace hex
     {
         const float c3 = glm::cos(rotation.z);
         const float s3 = glm::sin(rotation.z);
-        const float c2 = glm::cos(rotation.x);
-        const float s2 = glm::sin(rotation.x);
+        const float c2 = glm::cos(-rotation.x);
+        const float s2 = glm::sin(-rotation.x);
         const float c1 = glm::cos(rotation.y);
         const float s1 = glm::sin(rotation.y);
         const glm::vec3 u{(c1 * c3 + s1 * s2 * s3), (c2 * s3), (c1 * s2 * s3 - c3 * s1)};
