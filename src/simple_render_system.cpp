@@ -8,8 +8,7 @@ namespace hex
 {
     struct SimplePushConstantData
     {
-        glm::mat2 transform{1.0f};
-        glm::vec2 offset;
+        glm::mat4 transform{1.0f};
         alignas(16) glm::vec3 color;
     };
 
@@ -53,16 +52,18 @@ namespace hex
         pipeline = std::make_unique<Pipeline>(device, "simple.vert", "simple.frag", pipelineConfig);
     }
 
-    void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects)
+    void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects, const Camera &camera)
     {
         pipeline->bind(commandBuffer);
 
         for (auto &gameObject : gameObjects)
         {
+            gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y + 0.01f, glm::two_pi<float>());
+            gameObject.transform.rotation.x = glm::mod(gameObject.transform.rotation.x + 0.005f, glm::two_pi<float>());
+
             SimplePushConstantData pushData{};
-            pushData.offset = gameObject.transform2D.translation;
             pushData.color = gameObject.color;
-            pushData.transform = gameObject.transform2D.mat2();
+            pushData.transform = camera.getProjection() * gameObject.transform.mat4();
 
             vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &pushData);
             gameObject.model->bind(commandBuffer);
