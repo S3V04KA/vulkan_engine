@@ -1,12 +1,27 @@
+#include "utils.hpp"
 #include "model.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 
 #include <cassert>
-#ifdef NDEBUG
-#include <iostream>
-#endif
+#include <unordered_map>
+
+namespace std
+{
+    template <>
+    struct hash<hex::Model::Vertex>
+    {
+        size_t operator()(const hex::Model::Vertex &vertex) const
+        {
+            size_t seed = 0;
+            hex::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+            return seed;
+        }
+    };
+}
 
 namespace hex
 {
@@ -86,9 +101,6 @@ namespace hex
     {
         Builder builder{};
         builder.loadModel(modelname);
-#ifdef NDEBUG
-        std::cout << "Vertex cound: " << builder.vertices.size() << std::endl;
-#endif
         return std::make_unique<Model>(device, builder);
     }
 
@@ -157,6 +169,7 @@ namespace hex
         vertices.clear();
         indices.clear();
 
+        std::unordered_map<Vertex, uint32_t> uniqueVertices{};
         for (const auto &shape : shapes)
         {
             for (const auto &index : shape.mesh.indices)
@@ -203,7 +216,13 @@ namespace hex
                     };
                 }
 
-                vertices.push_back(vertex);
+                if (uniqueVertices.count(vertex) == 0)
+                {
+                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+                    vertices.push_back(vertex);
+                }
+
+                indices.push_back(uniqueVertices[vertex]);
             }
         }
     }

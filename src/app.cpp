@@ -88,11 +88,11 @@ namespace hex
         // std::shared_ptr<Model> model = createTestCubeModel(device, {0.0f, 0.0f, 0.0f});
         std::shared_ptr<Model> model = Model::createModelFromFile(device, "colored_cube");
 
-        auto cube = GameObject::createGameObject();
-        cube.model = model;
-        cube.transform.translation = {0.0f, 0.0f, 2.5f};
-        cube.transform.scale = {1.0f, 1.0f, 1.0f};
+        auto obj = GameObject::createGameObject();
+        obj.model = model;
+        obj.transform.translation = {0.0f, 0.0f, 2.5f};
+        obj.transform.scale = {1.0f, 1.0f, 1.0f};
 
-        gameObjects.push_back(std::move(cube));
+        gameObjects.push_back(std::move(obj));
     }
 }
